@@ -15,6 +15,8 @@ import Icon from "@/components/ui/icon";
 interface License {
   id: string;
   hwid: string;
+  fullName: string;
+  vkProfile: string;
   status: "active" | "inactive";
   created: string;
   lastCheck: string;
@@ -25,6 +27,8 @@ const Admin = () => {
     {
       id: "LIC-001",
       hwid: "A1B2C3D4E5F6",
+      fullName: "Иванов Иван Иванович",
+      vkProfile: "https://vk.com/ivanov_ivan",
       status: "active",
       created: "2024-01-15",
       lastCheck: "2024-12-30 14:30:25",
@@ -32,6 +36,8 @@ const Admin = () => {
     {
       id: "LIC-002",
       hwid: "F6E5D4C3B2A1",
+      fullName: "Петров Петр Петрович",
+      vkProfile: "https://vk.com/petrov_petr",
       status: "inactive",
       created: "2024-02-20",
       lastCheck: "2024-12-25 09:15:10",
@@ -39,6 +45,8 @@ const Admin = () => {
     {
       id: "LIC-003",
       hwid: "1A2B3C4D5E6F",
+      fullName: "Сидоров Сидор Сидорович",
+      vkProfile: "https://vk.com/sidorov_sidor",
       status: "active",
       created: "2024-03-10",
       lastCheck: "2024-12-30 16:45:33",
@@ -96,6 +104,8 @@ const Admin = () => {
             <TableHeader>
               <TableRow className="border-[#8E9196]/20 hover:bg-[#1A1F2C]/50">
                 <TableHead className="text-[#8E9196]">License ID</TableHead>
+                <TableHead className="text-[#8E9196]">Ф.И.О.</TableHead>
+                <TableHead className="text-[#8E9196]">VK Профиль</TableHead>
                 <TableHead className="text-[#8E9196]">Hardware ID</TableHead>
                 <TableHead className="text-[#8E9196]">Status</TableHead>
                 <TableHead className="text-[#8E9196]">Created</TableHead>
@@ -111,6 +121,20 @@ const Admin = () => {
                 >
                   <TableCell className="font-mono text-white">
                     {license.id}
+                  </TableCell>
+                  <TableCell className="text-white">
+                    {license.fullName}
+                  </TableCell>
+                  <TableCell>
+                    <a
+                      href={license.vkProfile}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[#0EA5E9] hover:text-[#0284C7] underline flex items-center gap-1"
+                    >
+                      <Icon name="ExternalLink" size={14} />
+                      VK
+                    </a>
                   </TableCell>
                   <TableCell className="font-mono text-[#8E9196]">
                     {license.hwid}

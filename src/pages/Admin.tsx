@@ -37,7 +37,7 @@ const Admin = () => {
     }
   };
 
-  const [licenses] = useState<License[]>([
+  const [licenses, setLicenses] = useState<License[]>([
     {
       id: "LIC-001",
       hwid: "A1B2C3D4E5F6",
@@ -68,6 +68,50 @@ const Admin = () => {
   ]);
 
   const [newLicense, setNewLicense] = useState("");
+  const [newLicenseForm, setNewLicenseForm] = useState({
+    hwid: "",
+    fullName: "",
+    vkProfile: "",
+  });
+  const [showAddForm, setShowAddForm] = useState(false);
+
+  const generateLicenseId = () => {
+    const num = (licenses.length + 1).toString().padStart(3, "0");
+    return `LIC-${num}`;
+  };
+
+  const addLicense = () => {
+    if (!newLicenseForm.hwid || !newLicenseForm.fullName) {
+      alert("Заполните обязательные поля");
+      return;
+    }
+
+    const newLic: License = {
+      id: generateLicenseId(),
+      hwid: newLicenseForm.hwid,
+      fullName: newLicenseForm.fullName,
+      vkProfile: newLicenseForm.vkProfile || "",
+      status: "active",
+      created: new Date().toISOString().split("T")[0],
+      lastCheck: new Date().toLocaleString("ru-RU"),
+    };
+
+    setLicenses([...licenses, newLic]);
+    setNewLicenseForm({ hwid: "", fullName: "", vkProfile: "" });
+    setShowAddForm(false);
+  };
+
+  const deleteLicense = (id: string) => {
+    if (confirm("Удалить лицензию?")) {
+      setLicenses(licenses.filter((l) => l.id !== id));
+    }
+  };
+
+  const viewLicense = (license: License) => {
+    alert(
+      `Лицензия: ${license.id}\nФИО: ${license.fullName}\nHWID: ${license.hwid}\nСтатус: ${license.status}`,
+    );
+  };
 
   if (!isAuthenticated) {
     return (
@@ -157,22 +201,77 @@ const Admin = () => {
 
         {/* Add License */}
         <div className="bg-[#2A2F3C] rounded-lg p-6 mb-8">
-          <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-            <Icon name="Plus" size={20} />
-            Add New License
-          </h2>
-          <div className="flex gap-4">
-            <Input
-              placeholder="Enter Hardware ID (HWID)"
-              value={newLicense}
-              onChange={(e) => setNewLicense(e.target.value)}
-              className="bg-[#1A1F2C] border-[#8E9196] text-white font-mono"
-            />
-            <Button className="bg-[#0EA5E9] hover:bg-[#0284C7]">
-              <Icon name="Key" size={16} className="mr-2" />
-              Generate
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold flex items-center gap-2">
+              <Icon name="Plus" size={20} />
+              Добавить лицензию
+            </h2>
+            <Button
+              onClick={() => setShowAddForm(!showAddForm)}
+              size="sm"
+              className="bg-[#0EA5E9] hover:bg-[#0284C7]"
+            >
+              {showAddForm ? "Скрыть" : "Показать форму"}
             </Button>
           </div>
+
+          {showAddForm && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Input
+                  placeholder="Hardware ID (HWID) *"
+                  value={newLicenseForm.hwid}
+                  onChange={(e) =>
+                    setNewLicenseForm({
+                      ...newLicenseForm,
+                      hwid: e.target.value,
+                    })
+                  }
+                  className="bg-[#1A1F2C] border-[#8E9196] text-white font-mono"
+                />
+                <Input
+                  placeholder="Ф.И.О. *"
+                  value={newLicenseForm.fullName}
+                  onChange={(e) =>
+                    setNewLicenseForm({
+                      ...newLicenseForm,
+                      fullName: e.target.value,
+                    })
+                  }
+                  className="bg-[#1A1F2C] border-[#8E9196] text-white"
+                />
+                <Input
+                  placeholder="VK профиль (опционально)"
+                  value={newLicenseForm.vkProfile}
+                  onChange={(e) =>
+                    setNewLicenseForm({
+                      ...newLicenseForm,
+                      vkProfile: e.target.value,
+                    })
+                  }
+                  className="bg-[#1A1F2C] border-[#8E9196] text-white"
+                />
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  onClick={addLicense}
+                  className="bg-green-600 hover:bg-green-700"
+                >
+                  <Icon name="Plus" size={16} className="mr-2" />
+                  Добавить лицензию
+                </Button>
+                <Button
+                  onClick={() =>
+                    setNewLicenseForm({ hwid: "", fullName: "", vkProfile: "" })
+                  }
+                  variant="outline"
+                  className="border-[#8E9196] text-[#8E9196]"
+                >
+                  Очистить
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Licenses Table */}
@@ -248,14 +347,18 @@ const Admin = () => {
                       <Button
                         size="sm"
                         variant="outline"
-                        className="border-[#8E9196] text-[#8E9196]"
+                        className="border-[#8E9196] text-[#8E9196] hover:bg-[#8E9196] hover:text-[#1A1F2C]"
+                        onClick={() => viewLicense(license)}
+                        title="Просмотреть детали"
                       >
                         <Icon name="Eye" size={14} />
                       </Button>
                       <Button
                         size="sm"
                         variant="outline"
-                        className="border-red-600 text-red-600"
+                        className="border-red-600 text-red-600 hover:bg-red-600 hover:text-white"
+                        onClick={() => deleteLicense(license.id)}
+                        title="Удалить лицензию"
                       >
                         <Icon name="Trash2" size={14} />
                       </Button>

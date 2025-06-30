@@ -23,6 +23,20 @@ interface License {
 }
 
 const Admin = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loginForm, setLoginForm] = useState({ username: "", password: "" });
+  const [loginError, setLoginError] = useState("");
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (loginForm.username === "admin" && loginForm.password === "3610901") {
+      setIsAuthenticated(true);
+      setLoginError("");
+    } else {
+      setLoginError("Неверный логин или пароль");
+    }
+  };
+
   const [licenses] = useState<License[]>([
     {
       id: "LIC-001",
@@ -55,6 +69,65 @@ const Admin = () => {
 
   const [newLicense, setNewLicense] = useState("");
 
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-[#1A1F2C] text-white flex items-center justify-center">
+        <div className="bg-[#2A2F3C] rounded-lg p-8 w-full max-w-md">
+          <div className="text-center mb-8">
+            <Icon
+              name="Shield"
+              size={48}
+              className="mx-auto mb-4 text-[#0EA5E9]"
+            />
+            <h1 className="text-2xl font-bold mb-2">Админ панель</h1>
+            <p className="text-[#8E9196]">Введите логин и пароль для входа</p>
+          </div>
+
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div>
+              <Input
+                type="text"
+                placeholder="Логин"
+                value={loginForm.username}
+                onChange={(e) =>
+                  setLoginForm({ ...loginForm, username: e.target.value })
+                }
+                className="bg-[#1A1F2C] border-[#8E9196] text-white"
+                required
+              />
+            </div>
+            <div>
+              <Input
+                type="password"
+                placeholder="Пароль"
+                value={loginForm.password}
+                onChange={(e) =>
+                  setLoginForm({ ...loginForm, password: e.target.value })
+                }
+                className="bg-[#1A1F2C] border-[#8E9196] text-white"
+                required
+              />
+            </div>
+
+            {loginError && (
+              <div className="text-red-500 text-sm text-center">
+                {loginError}
+              </div>
+            )}
+
+            <Button
+              type="submit"
+              className="w-full bg-[#0EA5E9] hover:bg-[#0284C7]"
+            >
+              <Icon name="LogIn" size={16} className="mr-2" />
+              Войти
+            </Button>
+          </form>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#1A1F2C] text-white p-6">
       <div className="max-w-6xl mx-auto">
@@ -65,9 +138,20 @@ const Admin = () => {
             </h1>
             <p className="text-[#8E9196]">Manage hardware-bound licenses</p>
           </div>
-          <div className="flex items-center gap-2 text-[#8E9196]">
-            <Icon name="Shield" size={20} />
-            <span className="font-mono text-sm">SECURE</span>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 text-[#8E9196]">
+              <Icon name="Shield" size={20} />
+              <span className="font-mono text-sm">SECURE</span>
+            </div>
+            <Button
+              onClick={() => setIsAuthenticated(false)}
+              size="sm"
+              variant="outline"
+              className="border-[#8E9196] text-[#8E9196] hover:bg-[#8E9196] hover:text-[#1A1F2C]"
+            >
+              <Icon name="LogOut" size={16} className="mr-2" />
+              Выйти
+            </Button>
           </div>
         </div>
 
